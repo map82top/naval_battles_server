@@ -17,6 +17,10 @@ const ShipsSchema = Schema(
         cost: {
             type: Number,
             required: true
+        },
+        hp: {
+            type: Number,
+            required: true
         }
     }
 )

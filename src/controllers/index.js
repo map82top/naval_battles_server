@@ -1,3 +1,7 @@
-export { default as UsersController } from "./UsersController";
-export { default as ShipsController } from "./ShipsController";
-export { default as PacksController } from "./PacksController";
+export { default as UsersController } from "./UsersController"
+export { default as ShipsController } from "./ShipsController"
+export { default as PacksController } from "./PacksController"
+export { default as QueueController } from "./QueueController"
+export { default as GameController } from "./GamesController"
+export { default as GamesController } from "./GamesController"
+export { default as ActionsController } from "./ActionsController"

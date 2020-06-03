@@ -2,18 +2,20 @@ import {Packs, Ships} from "../models";
 import {validationResult} from "express-validator";
 
 export default class PacksController {
+
     getPack(req, res) {
         const id = req.user && req.user._id;
         if(!req.body._id) {
             const fleetCountry = req.body.country
             Ships.find({country: fleetCountry}, (err, result) => {
                 if(err || !result) {
-                    return res.error(404).json({ description: "Ошибка создания колоды" });
+                    return res.status(404).json({ description: "Ошибка создания колоды" });
                 }
                 const fleet = result.map(ship => ({
                     _id: ship._id,
                     image: ship.image,
-                    cost: ship.cost
+                    cost: ship.cost,
+                    hp: ship.hp
                 }));
 
                 res.json({
@@ -28,7 +30,7 @@ export default class PacksController {
             let real_main = [];
             Packs.findById(req.body._id, (err, result) => {
                 if(err || !result) {
-                    return res.error(404).json({ description: "Ошибка получения колоды" });
+                    return res.status(404).json({ description: "Ошибка получения колоды" });
                 }
 
                 Promise.all([Ships.find({_id: { $in: result.reserve }}).exec(),  Ships.find({_id: { $in: result.main }}).exec()])
@@ -43,14 +45,16 @@ export default class PacksController {
                                         return {
                                             _id: ship._id,
                                             image: ship.image,
-                                            cost: ship.cost
+                                            cost: ship.cost,
+                                            hp: ship.hp
                                         }
                                     }),
                                     reserve: results[0].map(ship => {
                                         return {
                                             _id: ship._id,
                                             image: ship.image,
-                                            cost: ship.cost
+                                            cost: ship.cost,
+                                            hp: ship.hp
                                         }
                                     }),
                                     user: result.user
@@ -64,8 +68,6 @@ export default class PacksController {
     }
 
     savePack(req, res) {
-        console.log(req.body)
-
         if(!req.body) {
             res.json(500).json({description: "Не найдено тело запроса"})
         }

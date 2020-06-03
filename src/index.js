@@ -1,19 +1,39 @@
 import express from "express";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
-import {PacksController, ShipsController, UsersController} from "./controllers";
+import {
+    ActionsController,
+    GamesController,
+    PacksController,
+    QueueController,
+    ShipsController,
+    UsersController
+} from "./controllers";
 import mongoose from "mongoose";
 import {checkAutorization} from "./middlewares";
+import {createServer} from "http"
 import {createPackValidation, loginValidation, registrationValidation} from "./utils/validation";
+import socket from "socket.io";
+import cors from "cors"
 
 const app = express();
-dotenv.config();
 
+let http =  createServer(app);
+let io = socket(http, { origins: '*:*'})
+
+dotenv.config();
 const userController = new UsersController();
 const shipsController = new ShipsController();
+const actionsController = new ActionsController();
 const packsController = new PacksController();
+const gamesController = new GamesController(io);
+const queueController = new QueueController(io, gamesController);
 
 //middleware
+app.use(cors({
+    origin: true,
+    credentials: true
+}));
 app.use(express.static("public"));
 app.use(bodyParser.json());
 app.use(checkAutorization)
@@ -36,8 +56,10 @@ app.post('/packs/delete_pack', packsController.deletePack);
 
 //filling
 app.post('/ships/create', shipsController.create);
+app.post('/ships/update', shipsController.update);
+app.post("/actions/create", actionsController.create);
 
-const PORT =  process.env.PORT || 3003;
-app.listen(PORT, () => {
-    console.log(`Server: http://localhost:${process.env.PORT}`);
+const PORT =  process.env.PORT || 30100;
+http.listen(PORT, () => {
+    console.log(`Server: http://loclhost:${process.env.PORT}`);
 })

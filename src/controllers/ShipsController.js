@@ -6,7 +6,8 @@ export default class ShipsController {
             image: req.query.image,
             name: req.query.name,
             country: req.query.country,
-            cost: req.query.cost
+            cost: req.query.cost,
+            hp: req.query.hp
         }
         console.log(postData)
         const ship = new Ships(postData);
@@ -21,4 +22,24 @@ export default class ShipsController {
             });
     }
 
+    update(req, res) {
+        const postData = {
+            image: req.query.image,
+            name: req.query.name,
+            country: req.query.country,
+            cost: req.query.cost,
+            hp: req.query.hp
+        }
+        Ships.findOneAndUpdate({name: postData.name}, {
+            ...postData
+        },(err, user) => {
+            if (err || !user) {
+                return res.status(404).json({
+                    message: 'Данные не обновлены'
+                });
+            }
+            res.json({
+                message: 'Данные обновлены'
+            });
+    })}
 }
